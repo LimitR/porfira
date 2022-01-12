@@ -1,5 +1,6 @@
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder, body, HttpRequest};
 mod users;
+use postgres::{Client, NoTls, Statement};
 
 
 #[actix_web::main]
@@ -10,6 +11,7 @@ async fn main() -> std::io::Result<()> {
             .route("/db", web::get().to(users::routs::create_data_base))
             .route("/add", web::post().to(users::routs::post_add_user))
             .route("/get", web::post().to(users::routs::get_get_user))
+            .route("/t", web::get().to(users::routs::get_get_user))
     })
     .bind(("127.0.0.1", 9997))?
     .run()
