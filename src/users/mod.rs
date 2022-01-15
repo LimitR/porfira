@@ -1,4 +1,4 @@
 pub mod routs;
 
-#[path="serviсe.rs"]
+#[path = "serviсe.rs"]
 pub mod serviсe;
