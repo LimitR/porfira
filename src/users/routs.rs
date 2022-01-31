@@ -70,3 +70,31 @@ pub async fn get_get_user_uuid(id: web::Json<IdUserString>) -> impl Responder {
     let value: &str = res[0].get(0);
     HttpResponse::Ok().body(value.to_owned())
 }
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Some_json {
+    collection : Option<String>
+}
+
+pub async fn get_get_all_db (db: web::Json<Some_json>) -> impl Responder {
+    let mut res = serviсe::get_all_db(db.0.collection.unwrap()).await;
+    let mut vec_str: Vec<String> = Vec::new();
+    for element in res.unwrap().iter() {
+        vec_str.push(element.clone().to_owned().get(0));
+    }
+    HttpResponse::Ok().body(json!({"data": vec_str}))
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]pub struct UserRegistration {
+    login: String,
+    password: String
+}
+
+pub async fn registration(data: web::Json<UserRegistration>) -> impl Responder{
+    let res = serviсe::post_registration(data.0.login.clone(), data.0.password.clone()).await;
+    let ok = match res {
+        Ok(res) => String::from("Ok"),
+        Err(e) => String::from("Not ok")
+    };
+    HttpResponse::Ok().body(json!({"data": ok}))
+}
