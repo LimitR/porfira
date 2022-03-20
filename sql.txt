@@ -1,0 +1,14 @@
+CREATE TABLE tokens (
+	id serial primary key,
+	ref_id UUID,
+	token text NOT NULL,
+	FOREIGN KEY (ref_id) REFERENCES users (id)
+);
+
+CREATE TABLE users (
+    id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+	login text NOT NULL UNIQUE,
+	email text NOT NULL UNIQUE,
+	password_hash text NOT NULL,
+	ability text NOT NULL
+);

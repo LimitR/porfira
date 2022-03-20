@@ -17,3 +17,10 @@ postgres-types = { version = "0.2.2", features = ["derive"] }
 thiserror = "1.0"
 chrono = "0.4"
 jsonwebtoken = "=7.2"
+actix-web-actors = "4.1.0"
+rust-argon2 = "1.0"
+cookie = "0.16"
+
+
+[build]
+target = "x86_64-unknown-linux-gnu"
