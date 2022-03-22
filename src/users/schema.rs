@@ -42,39 +42,3 @@ pub struct UserJWT {
     pub login: String,
     pub ability: Vec<String>,
 }
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct Some_json {
-    pub collection: Option<String>,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct IdUserString {
-    pub id: String,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct IdUserI32 {
-    pub id: i32,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct UserPub {
-    pub id: i16,
-    pub login: String,
-    pub first_name: String,
-    pub last_name: String,
-    pub link_from_db_id: i16,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct SomeData {
-    pub value: String,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct PostText {
-    pub login: String,
-    pub text: String,
-    pub img: Vec<String>,
-}
