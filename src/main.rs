@@ -11,6 +11,8 @@ use actix_web::{body, get, post, web, App, HttpRequest, HttpResponse, HttpServer
 mod ability;
 mod plugins;
 mod users;
+mod db;
+
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
