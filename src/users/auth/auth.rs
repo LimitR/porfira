@@ -3,11 +3,23 @@ use dotenv::dotenv;
 use jsonwebtoken::{
     decode, decode_header, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation
 };
-use postgres::{Client, NoTls};
 use serde::de::Unexpected::Str;
 use serde::Serialize;
 use std::env;
+use actix_web::web;
+use sqlx::{FromRow, PgPool, pool};
+use sqlx::postgres::*;
 use uuid::Uuid;
+use crate::models::user::User;
+use std::sync::Arc;
+
+#[derive(sqlx::FromRow, Serialize, Debug, Clone)]
+struct CheckUser {
+    password_hash: String,
+    ability: i32,
+    id: String
+}
+
 
 pub fn create_JWT<T: Serialize>(data: T) -> String {
     encode(
@@ -28,38 +40,39 @@ pub fn hash_password(password: &str) -> String {
     .unwrap()
 }
 
-pub fn check_password<'a>(login: &'a str, password: &'a str) -> (bool, i32, Uuid) {
-    let mut conn = Client::connect(&dotenv::var("DB_CONN").unwrap() as &str, NoTls).unwrap();
+pub async fn check_password<'a>(pool: web::Data<PgPool>, login: &'a str, password: &'a str) -> (bool, i32, String) {
     let mut ability: i32 = 0;
     let mut password_hash: String = "".to_string();
-    let mut id = Uuid::nil();
-    for element in conn
-        .query(
-            "SELECT password_hash, ability, id FROM users WHERE login = $1",
-            &[&login],
-        )
-        .unwrap()
+    let mut id = String::new();
+    let user = sqlx::query_as::<_, CheckUser>(
+            "SELECT password_hash, ability, id FROM users2 WHERE login = $1",)
+        .bind(&login)
+        .fetch_one(&*pool.as_ref())
+        .await.unwrap();
     {
-        password_hash = element.get("password_hash");
-        ability = element.get("ability");
-        id = element.get("id");
+        password_hash = user.password_hash;
+        ability = user.ability;
+        id = user.id;
     }
     let res = argon2::verify_encoded(&password_hash, password.as_ref()).unwrap();
     (res, ability, id)
 }
 
-pub fn save_jwt_token(uuid: String, token: String) {
-    let mut conn = Client::connect(&dotenv::var("DB_CONN").unwrap() as &str, NoTls).unwrap();
-    conn.query(
-        "INSERT INTO tokens(ref_id, token) VALUES($1, $2)",
-        &[&uuid, &token],
-    );
+pub async fn save_jwt_token(pool: web::Data<PgPool>, uuid: String, token: String) {
+    sqlx::query(
+        "INSERT INTO tokens(ref_id, token) VALUES($1, $2)"
+    )
+        .bind::<String>(uuid)
+        .bind::<String>(token)
+        .execute(&*pool.as_ref());
 }
 
-pub fn refresh_token(uuid: String, token: String) {
-    let mut conn = Client::connect(&dotenv::var("DB_CONN").unwrap() as &str, NoTls).unwrap();
-    conn.query(
-        "UPDATE tokens SET token = $1 WHERE ref_id = $2",
-        &[&token, &uuid],
-    );
+pub async fn refresh_token(pool: web::Data<PgPool>, uuid: String, token: String) {
+    sqlx::query(
+        "UPDATE tokens SET token = $1 WHERE ref_id = $2"
+    )
+        .bind(&uuid)
+        .bind(&token)
+        .execute(&*pool.as_ref())
+        .await;
 }

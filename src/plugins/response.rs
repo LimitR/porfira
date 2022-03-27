@@ -1,9 +1,8 @@
 use actix_web::web;
 use serde;
-use serde::de::Unexpected::Str;
 use serde_json::*;
 
-#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+#[derive(serde::Serialize, Debug, Clone)]
 pub struct Response {
     pub error: bool,
     pub message: String,

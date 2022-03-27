@@ -1,20 +1,19 @@
+use std::pin::Pin;
+use std::task::{Context, Poll};
 use crate::users::serviсe;
-
+use crate::models::user::*;
 use crate::plugins::response;
-use crate::users::schema::*;
-use actix_web::{
-    body, get, post, web, App, HttpRequest, HttpResponse, HttpServer, Responder, Result,
-};
-use postgres::types::ToSql;
-use postgres::{Client, NoTls, Row};
+use actix_web::{body, get, post, web, App, HttpRequest, HttpResponse, HttpServer, Responder, Result, HttpResponseBuilder};
+use actix_web::body::MessageBody;
+use actix_web::web::{Bytes, Json};
 use serde::{Deserialize, Serialize};
 use serde_json::*;
-use std::error::Error;
-use std::ops::{Add, Rem};
-use std::sync::Mutex;
+use sqlx::PgPool;
+use crate::body::BodySize;
 
-pub async fn registration(data: web::Json<UserRegistration>) -> impl Responder {
-    let res = serviсe::post_registration(data.0).await;
+
+pub async fn registration(pool: web::Data<PgPool>, data: web::Json<NewUser>) -> impl Responder  {
+    let res = serviсe::post_registration(pool,data.0).await;
     let mut response = response::Response::new();
     match res {
         Ok(res) => response.get_message(&res),
@@ -22,12 +21,12 @@ pub async fn registration(data: web::Json<UserRegistration>) -> impl Responder {
             response.get_message("Error");
             response.get_error(true);
         }
-    }
-    HttpResponse::Ok().body(json!(response))
+    };
+    HttpResponse::Ok().body(response.message)
 }
 
-pub async fn login(data: web::Json<UserLogin>) -> impl Responder {
-    let res = serviсe::post_login(data.0).await;
+pub async fn login(pool: web::Data<PgPool>, data: web::Json<NewUser>) -> impl Responder   {
+    let res = serviсe::post_login(pool,data.0).await;
     let mut response = response::Response::new();
     match res {
         Ok(res) => response.get_message(&res),
@@ -36,5 +35,5 @@ pub async fn login(data: web::Json<UserLogin>) -> impl Responder {
             response.get_message(&res);
         }
     };
-    HttpResponse::Ok().body(json!(response))
+    HttpResponse::Ok().body(response.message)
 }
