@@ -9,13 +9,12 @@ use std::time::Duration;
 
 use actix_web::{body, get, post, web, App, HttpRequest, HttpResponse, HttpServer, Responder};
 mod ability;
-mod plugins;
-mod users;
 mod db;
 mod models;
+mod plugins;
+mod users;
 
 use sqlx::{PgPool, Pool, Postgres};
-
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -32,7 +31,8 @@ async fn main() -> std::io::Result<()> {
     .await
 }
 
-
 pub async fn db_pool() -> Pool<Postgres> {
-    Pool::<Postgres>::connect(&dotenv::var("URL_DB").unwrap()).await.unwrap()
+    Pool::<Postgres>::connect(&dotenv::var("URL_DB").unwrap())
+        .await
+        .unwrap()
 }

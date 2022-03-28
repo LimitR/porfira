@@ -4,30 +4,41 @@ use uuid::Uuid;
 
 #[derive(sqlx::FromRow, Serialize, Deserialize, Clone)]
 pub struct User {
-	pub login: String,
-	#[serde(skip_serializing)]
-	pub password_hash: String,
-	pub ability: i32,
-	pub email: String,
-	pub image: String,
-	pub approved: bool
+    pub login: String,
+    #[serde(skip_serializing)]
+    pub password_hash: String,
+    pub ability: i32,
+    pub email: String,
+    pub image: String,
+    pub approved: bool,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct NewUser {
-	pub login: String,
-	pub email: String,
-	pub password: String,
+    pub login: String,
+    pub email: String,
+    pub password: String,
 }
 
 #[derive(sqlx::FromRow, Serialize, Deserialize, Clone)]
 pub struct UpdateUser {
-	pub image: String
+    pub image: String,
 }
-
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct UserJWT {
-	pub login: String,
-	pub ability: i32,
+    pub login: String,
+    pub ability: i32,
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct UserLogin {
+    pub login: String,
+    pub password: String,
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct UserCheckEmail {
+    pub email: String,
+    pub link: String
 }

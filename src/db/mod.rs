@@ -1,2 +1,2 @@
-mod service;
 mod schema;
+mod service;
