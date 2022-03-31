@@ -99,7 +99,7 @@ pub async fn refresh_token(pool: web::Data<PgPool>, uuid: String, token: String)
 
 pub async fn send_checker_email(data: String) -> bool {
     let client = reqwest::Client::new();
-    let res = client.post("http://localhost:3006/")
+    let res = client.post("http://45.89.25.160:3006/")
         .json(&json!(
 	{"token": data}
     ))

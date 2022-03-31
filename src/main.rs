@@ -26,7 +26,7 @@ async fn main() -> std::io::Result<()> {
             .route("/registration", web::post().to(users::routs::registration))
             .route("/login", web::post().to(users::routs::login))
     })
-    .bind(("127.0.0.1", 3000))?
+    .bind((dotenv::var("URL").unwrap().as_ref(), 3000))?
     .run()
     .await
 }
